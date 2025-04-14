@@ -1,8 +1,9 @@
-from transformers import pipeline
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 import hashlib
 import os
 import json
 import time
+import torch
 
 # Create a cache directory if it doesn't exist
 CACHE_DIR = "cache"
@@ -33,10 +34,10 @@ def save_cache():
 
 def summarize_text(text, max_length=130, min_length=30):
     """
-    Summarize the input text using the transformers pipeline.
+    Summarize the given text using the BART model.
     
     Args:
-        text (str): Input text to summarize
+        text (str): Text to summarize
         max_length (int): Maximum length of the summary
         min_length (int): Minimum length of the summary
         
@@ -44,35 +45,27 @@ def summarize_text(text, max_length=130, min_length=30):
         str: Summarized text
     """
     try:
-        # Check if the text is too short to summarize
-        if len(text.split()) < 50:
-            return "Text is too short to summarize effectively. Please provide a longer text."
+        # Initialize model and tokenizer
+        model_name = "facebook/bart-large-cnn"
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
         
-        # Generate cache key
-        cache_key = get_cache_key(text, max_length, min_length)
-        
-        # Check if result is in cache
-        if cache_key in summary_cache:
-            print("Using cached summary")
-            return summary_cache[cache_key]
-        
-        # Initialize the summarizer with a smaller model
-        print("Loading summarizer model...")
-        summarizer = pipeline("summarization", model="facebook/bart-large-cnn", device=-1)
+        # Tokenize input text
+        inputs = tokenizer(text, return_tensors="pt", max_length=1024, truncation=True)
         
         # Generate summary
-        print("Generating summary...")
-        start_time = time.time()
-        summary = summarizer(text, max_length=max_length, min_length=min_length, do_sample=False)
-        end_time = time.time()
-        print(f"Summary generated in {end_time - start_time:.2f} seconds")
+        outputs = model.generate(
+            **inputs,
+            max_length=max_length,
+            min_length=min_length,
+            num_beams=4,
+            length_penalty=2.0,
+            early_stopping=True
+        )
         
-        result = summary[0]['summary_text']
+        # Decode and return the summary
+        summary = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        return summary
         
-        # Cache the result
-        summary_cache[cache_key] = result
-        save_cache()
-        
-        return result
     except Exception as e:
         return f"Error in summarization: {str(e)}" 

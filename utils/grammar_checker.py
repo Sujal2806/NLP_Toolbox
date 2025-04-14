@@ -1,46 +1,32 @@
-from textblob import TextBlob
-import re
+from transformers import T5ForConditionalGeneration, T5Tokenizer
 
-def check_grammar_and_spell(text):
+# Load the pretrained model and tokenizer
+model_name = "vennify/t5-base-grammar-correction"
+tokenizer = T5Tokenizer.from_pretrained(model_name)
+model = T5ForConditionalGeneration.from_pretrained(model_name)
+
+def correct_grammar(text):
     """
-    Check grammar and spelling in the input text.
-    
+    Correct grammar and spelling errors in the input text.
+
     Args:
-        text (str): Input text to check
-        
+        text (str): The text to be corrected.
+
     Returns:
-        dict: Dictionary containing corrections and suggestions
+        str: The corrected version of the input text.
     """
-    try:
-        # Create TextBlob object
-        blob = TextBlob(text)
-        
-        # Initialize results
-        corrections = []
-        spell_errors = []
-        
-        # Check spelling
-        for word in blob.words:
-            if word.spellcheck()[0][0] != word:
-                spell_errors.append({
-                    'word': word,
-                    'suggestions': [s[0] for s in word.spellcheck()[:3]]
-                })
-        
-        # Get corrected text
-        corrected_text = str(blob.correct())
-        
-        # Compare original and corrected text to find grammar corrections
-        if corrected_text != text:
-            corrections.append({
-                'original': text,
-                'corrected': corrected_text
-            })
-        
-        return {
-            'spell_errors': spell_errors,
-            'grammar_corrections': corrections,
-            'corrected_text': corrected_text
-        }
-    except Exception as e:
-        return {'error': str(e)} 
+    input_text = "gec: " + text
+    inputs = tokenizer.encode(input_text, return_tensors="pt", max_length=512, truncation=True)
+    outputs = model.generate(inputs, max_length=128, num_beams=5, early_stopping=True)
+    corrected_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    return corrected_text
+
+
+if __name__ == "__main__":
+    print("Enter text to correct grammar and spelling (type 'exit' to quit):")
+    while True:
+        user_input = input("\nText: ")
+        if user_input.lower() == "exit":
+            break
+        result = correct_grammar(user_input)
+        print("\nCorrected:", result)

@@ -1,0 +1,49 @@
+# Python virtual environments
+.venv/
+venv/
+ENV/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Project specific
+cache/
+*.log
+.env
+.env.local
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Streamlit
+.streamlit/
+
+# Model files and large data
+*.pt
+*.pth
+*.bin
+*.onnx
+*.h5
+*.hdf5
+
+# Temporary files
+*.tmp
+*.temp
+*.bak 
