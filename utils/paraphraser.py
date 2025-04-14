@@ -33,7 +33,7 @@ def save_cache():
 
 def paraphrase_text(text, num_return_sequences=3):
     """
-    Paraphrase the input text using transformers.
+    Paraphrase the input text using a smaller, faster model.
     
     Args:
         text (str): Input text to paraphrase
@@ -44,7 +44,7 @@ def paraphrase_text(text, num_return_sequences=3):
     """
     try:
         # Check if the text is too short to paraphrase
-        if len(text.split()) < 10:
+        if len(text.split()) < 5:
             return ["Text is too short to paraphrase effectively. Please provide a longer text."]
         
         # Generate cache key
@@ -60,12 +60,9 @@ def paraphrase_text(text, num_return_sequences=3):
         paraphraser = pipeline(
             "text2text-generation",
             model="tuner007/pegasus_paraphrase",
-            device=-1,
+            device=-1,  # Use CPU
             max_length=60,
-            do_sample=True,
-            temperature=0.7,
-            top_k=50,
-            top_p=0.95,
+            do_sample=False,  # Deterministic output for faster generation
             num_return_sequences=num_return_sequences
         )
         

@@ -1,54 +1,65 @@
 # NLP Toolbox
+Working link: https://sujal2806-nlp-toolbox-streamlit-app-lhdeak.streamlit.app/
 
-A comprehensive Natural Language Processing toolbox that combines multiple features in one application.
+A streamlined Natural Language Processing toolbox that provides three powerful text processing features: text summarization, paraphrasing, and grammar checking.
 
 ## Features
 
-1. Text Summarization
-2. Grammar and Spell Checker
-3. Sentence Auto Completion
-4. Plagiarism Checker
-5. Text Paraphraser
+- **Text Summarization**: Condense long texts into concise summaries
+- **Text Paraphrasing**: Generate alternative versions of text while preserving meaning
+- **Grammar Checking**: Identify and correct grammar and spelling issues
 
-## Setup
+## Installation
 
-1. Clone the repository
-2. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
-3. Download required NLTK data:
-   ```python
-   import nltk
-   nltk.download('punkt')
-   nltk.download('stopwords')
-   nltk.download('wordnet')
-   ```
-4. Download SpaCy model:
-   ```
-   python -m spacy download en_core_web_sm
-   ```
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/nlp-toolbox.git
+cd nlp-toolbox
+```
 
-## Running the Application
+2. Install the required packages:
+```bash
+pip install -r requirements.txt
+```
 
-1. Start the Flask backend:
-   ```
-   python app.py
-   ```
-2. Start the Streamlit frontend:
-   ```
-   streamlit run streamlit_app.py
-   ```
+3. Run the setup script to download necessary data:
+```bash
+python setup.py
+```
 
-## Project Structure
+## Usage
 
-- `app.py`: Flask backend server
-- `streamlit_app.py`: Streamlit frontend
-- `utils/`: Utility functions for each feature
-  - `summarizer.py`
-  - `grammar_checker.py`
-  - `auto_complete.py`
-  - `plagiarism_checker.py`
-  - `paraphraser.py`
-- `templates/`: HTML templates
-- `static/`: Static assets
+1. Start the Streamlit application:
+```bash
+python -m streamlit run streamlit_app.py
+```
+
+2. Open your web browser and navigate to the URL shown in the terminal (typically http://localhost:8501)
+
+3. Use the three tabs to access different features:
+   - **Summarization**: Enter text to generate a concise summary
+   - **Paraphrasing**: Enter text to get alternative versions
+   - **Grammar Check**: Enter text to check for grammar and spelling issues
+
+## Technical Details
+
+- Uses smaller, optimized models for faster processing
+- Implements caching to improve performance
+- Runs on CPU for better compatibility
+- Provides timing information for each operation
+
+## Requirements
+
+- Python 3.8+
+- See requirements.txt for package dependencies
+
+## Performance Optimizations
+
+- Caching system to store and reuse results
+- Smaller, efficient models for faster processing
+- CPU-optimized for better compatibility
+- Tab-based interface for improved user experience
+
+## License
+
+MIT License

@@ -1,13 +1,11 @@
 flask
 flask-cors
-transformers
+transformers==4.30.2
 --find-links https://download.pytorch.org/whl/torch_stable.html
 torch
-torchvision
-nltk
+nltk==3.8.1
 numpy
 pandas
 scikit-learn
-python-Levenshtein
 textblob
-streamlit 
+streamlit
