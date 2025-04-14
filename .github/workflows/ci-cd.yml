@@ -26,7 +26,6 @@ jobs:
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
           
@@ -50,8 +49,4 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: |
           echo "Deploying to production..."
-          # Example deployment steps:
-          # docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          # docker stop nlp-toolbox || true
-          # docker rm nlp-toolbox || true
-          # docker run -d --name nlp-toolbox -p 8501:8501 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest 
+          
