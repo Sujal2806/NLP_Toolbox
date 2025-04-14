@@ -1,5 +1,4 @@
 from transformers import PegasusForConditionalGeneration, PegasusTokenizer
-import torch
 
 # Load model and tokenizer
 model_name = 'tuner007/pegasus_paraphrase'
@@ -20,10 +19,10 @@ def paraphrase(text, num_return_sequences=5, num_beams=10):
     """
     batch = tokenizer.prepare_seq2seq_batch([text], truncation=True, padding='longest', return_tensors="pt")
     translated = model.generate(**batch,
-                                 max_length=60,
-                                 num_beams=num_beams,
-                                 num_return_sequences=num_return_sequences,
-                                 temperature=1.5)
+                             max_length=60,
+                             num_beams=num_beams,
+                             num_return_sequences=num_return_sequences,
+                             temperature=1.5)
     paraphrases = tokenizer.batch_decode(translated, skip_special_tokens=True)
     return paraphrases
 

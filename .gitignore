@@ -2,6 +2,7 @@
 .venv/
 venv/
 ENV/
+env/
 
 # Python cache files
 __pycache__/
@@ -46,4 +47,7 @@ cache/
 # Temporary files
 *.tmp
 *.temp
-*.bak 
+*.bak
+
+# Docker
+.docker/ 
