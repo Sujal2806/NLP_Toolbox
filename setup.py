@@ -1,6 +1,5 @@
 import nltk
 import os
-import subprocess
 
 def setup():
     # Create cache directory if it doesn't exist
@@ -14,10 +13,6 @@ def setup():
     nltk.download('wordnet')
     nltk.download('stopwords')
     nltk.download('omw-1.4')
-    
-    # Download TextBlob corpora
-    print("Downloading TextBlob corpora...")
-    subprocess.run(["python", "-m", "textblob.download_corpora"])
     
     print("Setup completed successfully!")
 

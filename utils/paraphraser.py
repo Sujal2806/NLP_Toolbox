@@ -1,8 +1,9 @@
-from transformers import pipeline
+from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqGeneration
 import hashlib
 import os
 import json
 import time
+import torch
 
 # Create a cache directory if it doesn't exist
 CACHE_DIR = "cache"
@@ -33,7 +34,7 @@ def save_cache():
 
 def paraphrase_text(text, num_return_sequences=3):
     """
-    Paraphrase the input text using a smaller, faster model.
+    Paraphrase the input text using transformers.
     
     Args:
         text (str): Input text to paraphrase
@@ -44,7 +45,7 @@ def paraphrase_text(text, num_return_sequences=3):
     """
     try:
         # Check if the text is too short to paraphrase
-        if len(text.split()) < 5:
+        if len(text.split()) < 10:
             return ["Text is too short to paraphrase effectively. Please provide a longer text."]
         
         # Generate cache key
@@ -55,31 +56,48 @@ def paraphrase_text(text, num_return_sequences=3):
             print("Using cached paraphrases")
             return paraphrase_cache[cache_key]
         
-        # Initialize the text generation pipeline with a smaller model
+        # Initialize the model and tokenizer
         print("Loading paraphraser model...")
-        paraphraser = pipeline(
-            "text2text-generation",
-            model="tuner007/pegasus_paraphrase",
-            device=-1,  # Use CPU
-            max_length=60,
-            do_sample=False,  # Deterministic output for faster generation
-            num_return_sequences=num_return_sequences
-        )
+        model_name = "facebook/bart-large-cnn"  # Using BART model which is more stable
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForSeq2SeqGeneration.from_pretrained(model_name)
+        
+        # Move model to CPU (device=-1)
+        device = -1
+        if device >= 0 and torch.cuda.is_available():
+            model = model.to(f"cuda:{device}")
+        
+        # Tokenize input
+        inputs = tokenizer(text, return_tensors="pt", max_length=1024, truncation=True)
+        if device >= 0 and torch.cuda.is_available():
+            inputs = {k: v.to(f"cuda:{device}") for k, v in inputs.items()}
         
         # Generate paraphrases
         print("Generating paraphrases...")
         start_time = time.time()
-        paraphrases = paraphraser(text)
+        
+        outputs = model.generate(
+            **inputs,
+            max_length=60,
+            min_length=10,
+            num_beams=4,
+            num_return_sequences=num_return_sequences,
+            temperature=0.7,
+            top_k=50,
+            top_p=0.95,
+            do_sample=True
+        )
+        
+        # Decode outputs
+        paraphrases = [tokenizer.decode(output, skip_special_tokens=True) for output in outputs]
+        
         end_time = time.time()
         print(f"Paraphrases generated in {end_time - start_time:.2f} seconds")
         
-        # Extract the generated text
-        results = [p['generated_text'] for p in paraphrases]
-        
         # Cache the result
-        paraphrase_cache[cache_key] = results
+        paraphrase_cache[cache_key] = paraphrases
         save_cache()
         
-        return results
+        return paraphrases
     except Exception as e:
         return [f"Error in paraphrasing: {str(e)}"] 
