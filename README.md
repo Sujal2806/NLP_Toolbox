@@ -79,22 +79,12 @@ Working link: https://sujal2806-nlp-toolbox-streamlit-app-lhdeak.streamlit.app/
 3. Enter your text and adjust parameters as needed
 4. Click the action button to process your text
 
-## Command Line Interface
-
-Run the command-line interface with:
-```bash
-python app.py
-```
-
-Follow the prompts to select a tool and enter your text.
-
 # Development
 
 ## Project Structure
 
 ```
 nlp-toolbox/
-├── app.py                  # Command-line interface
 ├── streamlit_app.py        # Web interface
 ├── requirements.txt        # Python dependencies
 ├── Dockerfile              # Docker configuration
